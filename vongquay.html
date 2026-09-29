@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background:
+        radial-gradient(circle at 50% 40%, #4b4b4b 0%, #292929 45%, #151515 100%);
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    overflow: hidden;
+}
+
+
+/* =========================
+   GAME
+========================= */
+
+.game {
+    width: min(620px, 94vw);
+    text-align: center;
+}
+
+
+/* =========================
+   WHEEL CONTAINER
+========================= */
+
+.wheel-container {
+    position: relative;
+
+    width: min(500px, 82vw);
+    aspect-ratio: 1;
+
+    margin: auto;
+}
+
+
+/* =========================
+   POINTER
+========================= */
+
+.pointer {
+    position: absolute;
+
+    z-index: 50;
+
+    left: 50%;
+    top: -16px;
+
+    transform: translateX(-50%);
+
+    width: 0;
+    height: 0;
+
+    border-left: 25px solid transparent;
+    border-right: 25px solid transparent;
+    border-top: 58px solid #f5f5f5;
+
+    filter:
+        drop-shadow(0 5px 5px rgba(0,0,0,.7));
+}
+
+
+/* =========================
+   WHEEL
+========================= */
+
+.wheel {
+    position: absolute;
+
+    inset: 0;
+
+    border-radius: 50%;
+
+    border: 12px solid #707070;
+
+    background: #333;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 0 0 5px #181818,
+        0 0 35px rgba(255,255,255,.13),
+        0 25px 70px rgba(0,0,0,.7);
+
+    transition:
+        transform 5.2s cubic-bezier(.12,.72,.12,1);
+}
+
+
+/*
+    Wheel background.
+
+    5 phần bằng nhau.
+*/
+
+.wheel-background {
+    position: absolute;
+
+    inset: 0;
+
+    border-radius: 50%;
+
+    background:
+        conic-gradient(
+            from -36deg,
+
+            #707070 0deg 72deg,
+            #4b4b4b 72deg 144deg,
+            #777777 144deg 216deg,
+            #575757 216deg 288deg,
+            #858585 288deg 360deg
+        );
+}
+
+
+/* =========================
+   DIVIDERS
+========================= */
+
+.divider {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 50%;
+    height: 3px;
+
+    background: rgba(255,255,255,.35);
+
+    transform-origin: left center;
+
+    z-index: 3;
+}
+
+.d1 {
+    transform: rotate(-90deg);
+}
+
+.d2 {
+    transform: rotate(-18deg);
+}
+
+.d3 {
+    transform: rotate(54deg);
+}
+
+.d4 {
+    transform: rotate(126deg);
+}
+
+.d5 {
+    transform: rotate(198deg);
+}
+
+
+/* =========================
+   PRIZE ITEMS
+========================= */
+
+.prize {
+    position: absolute;
+
+    z-index: 10;
+
+    width: 120px;
+    height: 100px;
+
+    left: 50%;
+    top: 50%;
+
+    margin-left: -60px;
+    margin-top: -50px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+
+    font-weight: 900;
+
+    text-align: center;
+
+    text-shadow:
+        0 2px 5px rgba(0,0,0,.8);
+
+    pointer-events: none;
+}
+
+
+/*
+    Prize position.
+
+    Các vị trí này khớp chính xác
+    với 5 sector của wheel.
+*/
+
+.prize-1 {
+    transform:
+        rotate(0deg)
+        translateY(-155px);
+}
+
+.prize-2 {
+    transform:
+        rotate(72deg)
+        translateY(-155px)
+        rotate(-72deg);
+}
+
+.prize-3 {
+    transform:
+        rotate(144deg)
+        translateY(-155px)
+        rotate(-144deg);
+}
+
+.prize-4 {
+    transform:
+        rotate(216deg)
+        translateY(-155px)
+        rotate(-216deg);
+}
+
+.prize-5 {
+    transform:
+        rotate(288deg)
+        translateY(-155px)
+        rotate(-288deg);
+}
+
+
+/* =========================
+   PRIZE ICONS
+========================= */
+
+.prize-icon {
+    width: 48px;
+    height: 48px;
+
+    margin-bottom: 7px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 29px;
+
+    background:
+        rgba(255,255,255,.14);
+
+    border:
+        2px solid rgba(255,255,255,.45);
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,.35);
+
+    backdrop-filter: blur(5px);
+}
+
+.prize-name {
+    font-size: 15px;
+    line-height: 1.1;
+}
+
+
+/* =========================
+   CENTER BUTTON
+========================= */
+
+.center-button {
+    position: absolute;
+
+    z-index: 30;
+
+    left: 50%;
+    top: 50%;
+
+    width: 105px;
+    height: 105px;
+
+    transform: translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    border: 8px solid #bdbdbd;
+
+    background:
+        radial-gradient(
+            circle at 35% 25%,
+            #777,
+            #333 65%,
+            #202020
+        );
+
+    color: white;
+
+    font-size: 17px;
+
+    font-weight: 900;
+
+    cursor: pointer;
+
+    box-shadow:
+        inset 0 0 15px rgba(0,0,0,.8),
+        0 6px 15px rgba(0,0,0,.65);
+
+    transition:
+        transform .15s,
+        filter .2s;
+}
+
+.center-button:hover {
+    filter: brightness(1.25);
+}
+
+.center-button:active {
+    transform:
+        translate(-50%, -50%)
+        scale(.94);
+}
+
+.center-button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+
+/* =========================
+   EXTERNAL SPIN BUTTON
+========================= */
+
+.spin-button {
+    margin-top: 30px;
+
+    padding: 13px 32px;
+
+    border-radius: 10px;
+
+    border: 1px solid #777;
+
+    background: #eee;
+
+    color: #222;
+
+    font-size: 15px;
+
+    font-weight: 900;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 0 #999;
+
+    transition: .15s;
+}
+
+.spin-button:hover {
+    transform: translateY(-2px);
+}
+
+.spin-button:active {
+    transform: translateY(3px);
+
+    box-shadow:
+        0 2px 0 #999;
+}
+
+.spin-button:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+
+/* =========================
+   RESET
+========================= */
+
+.reset-button {
+    margin-left: 8px;
+
+    padding: 13px 25px;
+
+    border-radius: 10px;
+
+    border: 1px solid #555;
+
+    background: #292929;
+
+    color: #ddd;
+
+    font-size: 15px;
+
+    font-weight: 900;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+.reset-button:hover {
+    background: #3b3b3b;
+}
+
+
+/* =========================
+   POPUP
+========================= */
+
+.overlay {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 100;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        rgba(0,0,0,.78);
+
+    backdrop-filter:
+        blur(8px);
+}
+
+.overlay.show {
+    display: flex;
+}
+
+
+.popup {
+    width: min(430px, 88vw);
+
+    padding: 38px 25px;
+
+    text-align: center;
+
+    border-radius: 25px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #505050,
+            #202020
+        );
+
+    border:
+        1px solid #777;
+
+    box-shadow:
+        0 30px 100px rgba(0,0,0,.85);
+
+    animation:
+        popupIn .5s
+        cubic-bezier(.17,.89,.32,1.4);
+}
+
+
+.popup-icon {
+    font-size: 85px;
+
+    animation:
+        bounce 1s infinite,
+        glow 1.4s infinite alternate;
+}
+
+
+.popup h2 {
+    margin:
+        12px 0 7px;
+
+    color: white;
+
+    font-size: 30px;
+}
+
+
+.popup p {
+    margin-bottom: 25px;
+
+    color: #bbb;
+
+    font-size: 18px;
+}
+
+
+.continue {
+    padding: 12px 30px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: white;
+
+    color: #222;
+
+    font-weight: 900;
+
+    cursor: pointer;
+}
+
+
+/* =========================
+   CONFETTI
+========================= */
+
+.confetti {
+    position: fixed;
+
+    top: -20px;
+
+    width: 9px;
+    height: 15px;
+
+    z-index: 200;
+
+    pointer-events: none;
+
+    animation:
+        fall linear forwards;
+}
+
+
+/* =========================
+   ANIMATIONS
+========================= */
+
+@keyframes popupIn {
+
+    from {
+        opacity: 0;
+        transform: scale(.5);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+@keyframes bounce {
+
+    0%,100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-12px) scale(1.08);
+    }
+}
+
+
+@keyframes glow {
+
+    from {
+        filter:
+            drop-shadow(
+                0 0 5px
+                rgba(255,255,255,.2)
+            );
+    }
+
+    to {
+        filter:
+            drop-shadow(
+                0 0 25px
+                rgba(255,255,255,.95)
+            );
+    }
+}
+
+
+@keyframes fall {
+
+    to {
+        transform:
+            translateY(110vh)
+            rotate(720deg);
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="game">
+
+    <div class="wheel-container">
+
+        <!-- POINTER -->
+        <div class="pointer"></div>
+
+
+        <!-- WHEEL -->
+        <div
+            class="wheel"
+            id="wheel">
+
+            <div class="wheel-background"></div>
+
+
+            <!-- DIVIDERS -->
+
+            <div class="divider d1"></div>
+            <div class="divider d2"></div>
+            <div class="divider d3"></div>
+            <div class="divider d4"></div>
+            <div class="divider d5"></div>
+
+
+            <!-- PRIZE 1 -->
+
+            <div class="prize prize-1">
+
+                <div class="prize-icon">
+                    🍬
+                </div>
+
+                <div class="prize-name">
+                    2x Candy
+                </div>
+
+            </div>
+
+
+            <!-- PRIZE 2 -->
+
+            <div class="prize prize-2">
+
+                <div class="prize-icon">
+                    🍭
+                </div>
+
+                <div class="prize-name">
+                    5x Candy
+                </div>
+
+            </div>
+
+
+            <!-- PRIZE 3 -->
+
+            <div class="prize prize-3">
+
+                <div class="prize-icon">
+                    🍪
+                </div>
+
+                <div class="prize-name">
+                    2x Cookies
+                </div>
+
+            </div>
+
+
+            <!-- PRIZE 4 -->
+
+            <div class="prize prize-4">
+
+                <div class="prize-icon">
+                    💵
+                </div>
+
+                <div class="prize-name">
+                    10K VNĐ
+                </div>
+
+            </div>
+
+
+            <!-- PRIZE 5 -->
+
+            <div class="prize prize-5">
+
+                <div class="prize-icon">
+                    💰
+                </div>
+
+                <div class="prize-name">
+                    50K VNĐ
+                </div>
+
+            </div>
+
+
+            <!-- CENTER BUTTON -->
+
+            <button
+                class="center-button"
+                id="centerButton">
+
+                SPIN
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- BUTTONS -->
+
+    <button
+        class="spin-button"
+        id="spinButton">
+
+        🎡 SPIN
+
+    </button>
+
+
+    <button
+        class="reset-button"
+        id="resetButton">
+
+        ↻ RESET
+
+    </button>
+
+</div>
+
+
+<!-- =========================
+     WIN POPUP
+========================= -->
+
+<div
+    class="overlay"
+    id="overlay">
+
+    <div class="popup">
+
+        <div
+            class="popup-icon"
+            id="popupIcon">
+            🎁
+        </div>
+
+        <h2>
+            YOU WON!
+        </h2>
+
+        <p id="popupText">
+            Congratulations!
+        </p>
+
+        <button
+            class="continue"
+            id="continueButton">
+
+            CONTINUE
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   PRIZES
+========================= */
+
+const prizes = [
+
+    {
+        name: "2x Candy",
+        icon: "🍬"
+    },
+
+    {
+        name: "5x Candy",
+        icon: "🍭"
+    },
+
+    {
+        name: "2x Cookies",
+        icon: "🍪"
+    },
+
+    {
+        name: "10K VNĐ",
+        icon: "💵"
+    },
+
+    {
+        name: "50K VNĐ",
+        icon: "💰"
+    }
+
+];
+
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const wheel =
+    document.getElementById(
+        "wheel"
+    );
+
+const spinButton =
+    document.getElementById(
+        "spinButton"
+    );
+
+const centerButton =
+    document.getElementById(
+        "centerButton"
+    );
+
+const resetButton =
+    document.getElementById(
+        "resetButton"
+    );
+
+const overlay =
+    document.getElementById(
+        "overlay"
+    );
+
+const popupIcon =
+    document.getElementById(
+        "popupIcon"
+    );
+
+const popupText =
+    document.getElementById(
+        "popupText"
+    );
+
+const continueButton =
+    document.getElementById(
+        "continueButton"
+    );
+
+
+/* =========================
+   GAME STATE
+========================= */
+
+let results = [];
+
+let currentSpin = 0;
+
+let rotation = 0;
+
+let spinning = false;
+
+
+/* =========================
+   SHUFFLE
+========================= */
+
+function shuffle(array) {
+
+    const arr = [...array];
+
+    for (
+        let i = arr.length - 1;
+        i > 0;
+        i--
+    ) {
+
+        const j =
+            Math.floor(
+                Math.random() *
+                (i + 1)
+            );
+
+        [
+            arr[i],
+            arr[j]
+        ] = [
+            arr[j],
+            arr[i]
+        ];
+
+    }
+
+    return arr;
+}
+
+
+/* =========================
+   RESET
+========================= */
+
+function resetGame() {
+
+    /*
+        Tạo đúng 5 kết quả.
+
+        Mỗi phần thưởng xuất hiện
+        đúng 1 lần.
+    */
+
+    results =
+        shuffle([
+            0,
+            1,
+            2,
+            3,
+            4
+        ]);
+
+
+    currentSpin = 0;
+
+    rotation = 0;
+
+    spinning = false;
+
+
+    wheel.style.transition =
+        "none";
+
+    wheel.style.transform =
+        "rotate(0deg)";
+
+
+    spinButton.disabled =
+        false;
+
+    centerButton.disabled =
+        false;
+
+
+    setTimeout(() => {
+
+        wheel.style.transition =
+            "transform 5.2s cubic-bezier(.12,.72,.12,1)";
+
+    }, 50);
+
+}
+
+
+/* =========================
+   SPIN
+========================= */
+
+function spin() {
+
+    if (
+        spinning ||
+        currentSpin >= 5
+    ) {
+        return;
+    }
+
+
+    spinning = true;
+
+    spinButton.disabled = true;
+
+    centerButton.disabled = true;
+
+
+    /*
+        Lấy kết quả của lượt hiện tại.
+    */
+
+    const prizeIndex =
+        results[currentSpin];
+
+
+    const prize =
+        prizes[prizeIndex];
+
+
+    /*
+        Các sector:
+
+        0 = 36°
+        1 = 108°
+        2 = 180°
+        3 = 252°
+        4 = 324°
+
+        Đây là đúng tâm của 5 phần.
+    */
+
+    const sectorAngles = [
+        36,
+        108,
+        180,
+        252,
+        324
+    ];
+
+
+    const target =
+        sectorAngles[prizeIndex];
+
+
+    /*
+        Quay thêm 6 vòng.
+    */
+
+    const fullSpins =
+        360 * 6;
+
+
+    /*
+        Đưa đúng phần thưởng
+        vào pointer phía trên.
+    */
+
+    rotation +=
+        fullSpins +
+        (360 - target);
+
+
+    wheel.style.transform =
+        `rotate(${rotation}deg)`;
+
+
+    /*
+        Chờ wheel quay xong.
+    */
+
+    setTimeout(() => {
+
+        currentSpin++;
+
+
+        showPrize(prize);
+
+    }, 5300);
+
+}
+
+
+/* =========================
+   SHOW PRIZE
+========================= */
+
+function showPrize(prize) {
+
+    popupIcon.textContent =
+        prize.icon;
+
+
+    popupText.innerHTML =
+        `You won <strong>${prize.name}</strong>!`;
+
+
+    overlay.classList.add(
+        "show"
+    );
+
+
+    createConfetti();
+
+}
+
+
+/* =========================
+   CLOSE POPUP
+========================= */
+
+function closePopup() {
+
+    overlay.classList.remove(
+        "show"
+    );
+
+
+    spinning = false;
+
+
+    if (currentSpin < 5) {
+
+        spinButton.disabled =
+            false;
+
+        centerButton.disabled =
+            false;
+
+    } else {
+
+        spinButton.disabled =
+            true;
+
+        centerButton.disabled =
+            true;
+
+        spinButton.textContent =
+            "✓ DONE";
+
+    }
+
+}
+
+
+/* =========================
+   CONFETTI
+========================= */
+
+function createConfetti() {
+
+    const colors = [
+        "#ffffff",
+        "#cccccc",
+        "#999999",
+        "#eeeeee",
+        "#666666"
+    ];
+
+
+    for (
+        let i = 0;
+        i < 110;
+        i++
+    ) {
+
+        const piece =
+            document.createElement(
+                "div"
+            );
+
+
+        piece.className =
+            "confetti";
+
+
+        piece.style.left =
+            Math.random() *
+            100 +
+            "vw";
+
+
+        piece.style.background =
+            colors[
+                Math.floor(
+                    Math.random() *
+                    colors.length
+                )
+            ];
+
+
+        piece.style.animationDuration =
+            (
+                2 +
+                Math.random() * 3
+            ) +
+            "s";
+
+
+        piece.style.animationDelay =
+            Math.random() *
+            .4 +
+            "s";
+
+
+        document.body.appendChild(
+            piece
+        );
+
+
+        setTimeout(() => {
+
+            piece.remove();
+
+        }, 5500);
+
+    }
+
+}
+
+
+/* =========================
+   EVENTS
+========================= */
+
+spinButton.addEventListener(
+    "click",
+    spin
+);
+
+
+centerButton.addEventListener(
+    "click",
+    spin
+);
+
+
+resetButton.addEventListener(
+    "click",
+    resetGame
+);
+
+
+continueButton.addEventListener(
+    "click",
+    closePopup
+);
+
+
+/* =========================
+   START
+========================= */
+
+resetGame();
+
+</script>
+
+</body>
+</html>
